@@ -174,11 +174,51 @@
 
     /* SUBMITTED STATE */
     .submitted-msg {
-      display: none; text-align: center; padding: 2rem 1rem;
+      display: none; text-align: left; padding: 2rem 1.5rem;
     }
-    .submitted-msg .si-icon { font-size: 36px; color: var(--text3); margin-bottom: 12px; }
-    .submitted-msg .si-title { font-family: 'Instrument Serif', serif; font-size: 1.5rem; margin-bottom: 8px; }
-    .submitted-msg .si-desc { font-size: 13px; color: var(--text2); }
+    .submitted-msg .si-step {
+      font-size: 11px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--text3); margin-bottom: 1rem;
+    }
+    .submitted-msg .si-title {
+      font-family: 'Instrument Serif', serif; font-size: 1.6rem; margin-bottom: 0.5rem; line-height: 1.2;
+    }
+    .submitted-msg .si-sub {
+      font-size: 14px; color: var(--text2); margin-bottom: 1.75rem; line-height: 1.6;
+    }
+    .swish-payment-box {
+      background: var(--swish-bg); border: 0.5px solid var(--swish-border);
+      border-radius: var(--radius-lg); padding: 1.25rem 1.5rem;
+    }
+    .swish-payment-box .sp-label {
+      font-size: 11px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase;
+      color: var(--swish-text); opacity: 0.7; margin-bottom: 1rem;
+    }
+    .swish-payment-box .sp-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 0; border-bottom: 0.5px solid var(--swish-border);
+    }
+    .swish-payment-box .sp-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .swish-payment-box .sp-key { font-size: 13px; color: var(--swish-text); opacity: 0.75; }
+    .swish-payment-box .sp-val {
+      font-size: 14px; font-weight: 500; color: var(--swish-text);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .swish-payment-box .sp-id {
+      font-family: monospace; font-size: 15px; letter-spacing: 1px; color: var(--swish-text);
+    }
+    .copy-btn {
+      background: none; border: 0.5px solid var(--swish-border); border-radius: 4px;
+      padding: 3px 7px; cursor: pointer; font-size: 11px; color: var(--swish-text);
+      font-family: 'DM Sans', sans-serif; opacity: 0.8; transition: opacity 0.15s;
+    }
+    .copy-btn:hover { opacity: 1; }
+    .swish-payment-box .sp-note {
+      margin-top: 1rem; font-size: 12px; color: var(--swish-text); opacity: 0.7; line-height: 1.5;
+    }
+    .sp-amount-big {
+      font-family: 'Instrument Serif', serif; font-size: 1.8rem; color: var(--swish-text);
+    }
 
     /* SECTION SHARED */
     section { padding: 2.5rem 1.5rem; border-bottom: 0.5px solid var(--border); }
@@ -356,9 +396,31 @@
     </div>
 
     <div class="submitted-msg" id="submitted">
-      <div class="si-icon"><i class="ti ti-clock-hour-4"></i></div>
-      <div class="si-title">Bengt is thinking</div>
-      <div class="si-desc">Your problem has been received. Expect a complete, reasoned solution within 24 hours — delivered to your inbox.</div>
+      <div class="si-step">Step 2 of 2 — confirm payment</div>
+      <div class="si-title">One last thing — Swish 100 kr to start</div>
+      <div class="si-sub">Your problem is queued. Bengt starts reasoning the moment payment is confirmed. Use the details below exactly as shown.</div>
+      <div class="swish-payment-box">
+        <div class="sp-label">Swish payment details</div>
+        <div class="sp-row">
+          <span class="sp-key">Number</span>
+          <span class="sp-val">
+            <span>0765835008</span>
+            <button class="copy-btn" onclick="copyText('0765835008', this)">copy</button>
+          </span>
+        </div>
+        <div class="sp-row">
+          <span class="sp-key">Amount</span>
+          <span class="sp-val"><span class="sp-amount-big">100 kr</span></span>
+        </div>
+        <div class="sp-row">
+          <span class="sp-key">Message</span>
+          <span class="sp-val">
+            <span class="sp-id" id="order-id">—</span>
+            <button class="copy-btn" onclick="copyText(document.getElementById('order-id').textContent, this)">copy</button>
+          </span>
+        </div>
+        <p class="sp-note">Include the ID exactly as shown — this is how Bengt matches your payment to your problem. Once received, expect your solution within 24 hours.</p>
+      </div>
     </div>
   </section>
 
@@ -513,9 +575,25 @@
   tickClock();
   setInterval(tickClock, 1000);
 
+  function generateId() {
+    var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    var id = 'BNG-';
+    for (var i = 0; i < 6; i++) id += chars[Math.floor(Math.random() * chars.length)];
+    return id;
+  }
+
+  function copyText(text, btn) {
+    navigator.clipboard.writeText(text).then(function() {
+      var orig = btn.textContent;
+      btn.textContent = 'copied!';
+      setTimeout(function() { btn.textContent = orig; }, 1500);
+    });
+  }
+
   function handleSubmit() {
     var val = document.getElementById('problem-input').value.trim();
     if (!val) { document.getElementById('problem-input').focus(); return; }
+    document.getElementById('order-id').textContent = generateId();
     document.getElementById('submit-area').style.display = 'none';
     document.getElementById('submitted').style.display = 'block';
   }
