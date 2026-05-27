@@ -12,62 +12,43 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+
+
+
     :root {
       --bg: #000000;
-      --bg2: #f7f6f3;
-      --bg3: #f0efe9;
-      --text: #1a1a18;
-      --text2: #5a5a55;
-      --text3: #9a9990;
-      --border: rgba(26,26,24,0.12);
-      --border2: rgba(26,26,24,0.22);
-      --info-bg: #e6f1fb;
-      --info-border: rgba(24,95,165,0.3);
-      --info-text: #0c447c;
-      --swish-bg: #f0f7ee;
-      --swish-border: rgba(59,109,17,0.25);
-      --swish-text: #27500a;
+      --bg2: #111111;
+      --bg3: #000000;
+      --text: #ffffff;
+      --text2: #b5b5b5;
+      --text3: #777777;
+      --border: rgba(255,255,255,0.08);
+      --border2: rgba(255,255,255,0.16);
+      --info-bg: #0c2a45;
+      --info-border: rgba(55,138,221,0.3);
+      --info-text: #85b7eb;
+      --swish-bg: #172004;
+      --swish-border: rgba(99,153,34,0.3);
+      --swish-text: #97c459;
       --radius: 8px;
       --radius-lg: 12px;
     }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #1a1a18;
-        --bg2: #222220;
-        --bg3: #2a2a27;
-        --text: #f0efe9;
-        --text2: #a8a79f;
-        --text3: #6a6a62;
-        --border: rgba(240,239,233,0.12);
-        --border2: rgba(240,239,233,0.22);
-        --info-bg: #0c2a45;
-        --info-border: rgba(55,138,221,0.3);
-        --info-text: #85b7eb;
-        --swish-bg: #172004;
-        --swish-border: rgba(99,153,34,0.3);
-        --swish-text: #97c459;
-      }
-    }
-
-    html { scroll-behavior: smooth; }
-
+    
     body {
       font-family: 'DM Sans', sans-serif;
-      background: var(--bg3);
+      background: #000;
       color: var(--text);
       min-height: 100vh;
       line-height: 1.6;
     }
-
+    
     .page {
-      max-width: 760px;
-      margin: 0 auto;
-      background: var(--bg);
+      width: 100%;
       min-height: 100vh;
-      border-left: 0.5px solid var(--border);
-      border-right: 0.5px solid var(--border);
+      background: #000;
     }
+
+
 
     /* NAV */
     nav {
