@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bengt AI — Deep reasoning, on demand</title>
+  <meta name="description" content="Submit a problem. Bengt reasons over it for up to 24 hours and returns a complete, structured solution. Pay per solution, not per token." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --bg2: #f7f6f3;
+      --bg3: #f0efe9;
+      --text: #1a1a18;
+      --text2: #5a5a55;
+      --text3: #9a9990;
+      --border: rgba(26,26,24,0.12);
+      --border2: rgba(26,26,24,0.22);
+      --info-bg: #e6f1fb;
+      --info-border: rgba(24,95,165,0.3);
+      --info-text: #0c447c;
+      --swish-bg: #f0f7ee;
+      --swish-border: rgba(59,109,17,0.25);
+      --swish-text: #27500a;
+      --radius: 8px;
+      --radius-lg: 12px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1a1a18;
+        --bg2: #222220;
+        --bg3: #2a2a27;
+        --text: #f0efe9;
+        --text2: #a8a79f;
+        --text3: #6a6a62;
+        --border: rgba(240,239,233,0.12);
+        --border2: rgba(240,239,233,0.22);
+        --info-bg: #0c2a45;
+        --info-border: rgba(55,138,221,0.3);
+        --info-text: #85b7eb;
+        --swish-bg: #172004;
+        --swish-border: rgba(99,153,34,0.3);
+        --swish-text: #97c459;
+      }
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg3);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .page {
+      max-width: 760px;
+      margin: 0 auto;
+      background: var(--bg);
+      min-height: 100vh;
+      border-left: 0.5px solid var(--border);
+      border-right: 0.5px solid var(--border);
+    }
+
+    /* NAV */
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 0.5px solid var(--border);
+      position: sticky; top: 0; background: var(--bg); z-index: 10;
+    }
+    .nav-logo {
+      font-family: 'Instrument Serif', serif; font-size: 19px; letter-spacing: -0.3px;
+      display: flex; align-items: center; gap: 8px; color: var(--text); text-decoration: none;
+    }
+    .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text); }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .made-sweden {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px; color: var(--text3); letter-spacing: 0.5px;
+    }
+    .flag {
+      width: 22px; height: 15px; border-radius: 2px; overflow: hidden;
+      border: 0.5px solid var(--border); flex-shrink: 0; display: inline-flex;
+    }
+    .flag svg { display: block; width: 100%; height: 100%; }
+    .nav-cta {
+      font-size: 13px; color: var(--text2); cursor: pointer; padding: 7px 14px;
+      border-radius: var(--radius); border: 0.5px solid var(--border2);
+      background: transparent; font-family: 'DM Sans', sans-serif; text-decoration: none;
+      transition: background 0.15s;
+    }
+    .nav-cta:hover { background: var(--bg2); }
+
+    /* EARLY ACCESS BANNER */
+    .early-access {
+      padding: 0.9rem 1.5rem; background: var(--info-bg);
+      border-bottom: 0.5px solid var(--info-border);
+      display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    }
+    .ea-left { display: flex; align-items: center; gap: 10px; }
+    .ea-icon { font-size: 16px; color: var(--info-text); flex-shrink: 0; }
+    .ea-text { font-size: 13px; color: var(--info-text); line-height: 1.45; }
+    .ea-text strong { font-weight: 500; display: block; }
+    .ea-btn {
+      font-size: 12px; font-weight: 500; font-family: 'DM Sans', sans-serif;
+      padding: 7px 14px; border-radius: var(--radius); border: 0.5px solid var(--info-border);
+      color: var(--info-text); background: transparent; cursor: pointer;
+      white-space: nowrap; text-decoration: none; transition: background 0.15s;
+    }
+    .ea-btn:hover { background: var(--bg); }
+
+    /* HERO */
+    .hero {
+      padding: 4rem 1.5rem 3rem; text-align: center;
+      border-bottom: 0.5px solid var(--border);
+    }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--text3); margin-bottom: 1.5rem;
+    }
+    .eyebrow-line { width: 20px; height: 0.5px; background: var(--border2); }
+    h1 {
+      font-family: 'Instrument Serif', serif; font-size: clamp(2rem, 6vw, 3.2rem);
+      line-height: 1.1; letter-spacing: -0.5px; max-width: 560px; margin: 0 auto 0.75rem;
+    }
+    h1 em { font-style: italic; }
+    .hero-sub {
+      font-size: 15px; color: var(--text2); line-height: 1.7; font-weight: 300;
+      max-width: 420px; margin: 0 auto 2.5rem;
+    }
+
+    /* SUBMIT FORM */
+    .submit-area { max-width: 480px; margin: 0 auto; }
+    .textarea-wrap {
+      background: var(--bg); border: 0.5px solid var(--border2);
+      border-radius: var(--radius-lg); overflow: hidden;
+      transition: border-color 0.15s;
+    }
+    .textarea-wrap:focus-within { border-color: var(--text3); }
+    textarea {
+      width: 100%; min-height: 110px; padding: 1rem;
+      background: transparent; border: none; outline: none; resize: none;
+      font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.6;
+      color: var(--text);
+    }
+    textarea::placeholder { color: var(--text3); }
+    .ta-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 12px; border-top: 0.5px solid var(--border);
+    }
+    .ta-meta { font-size: 12px; color: var(--text3); }
+    .submit-btn {
+      display: flex; align-items: center; gap: 6px; padding: 8px 16px;
+      border-radius: var(--radius); background: var(--text); color: var(--bg);
+      border: none; cursor: pointer; font-family: 'DM Sans', sans-serif;
+      font-size: 13px; font-weight: 500; transition: opacity 0.15s;
+    }
+    .submit-btn:hover { opacity: 0.78; }
+    .submit-btn:active { transform: scale(0.98); }
+    .pricing-hint {
+      margin-top: 12px; font-size: 12px; color: var(--text3);
+      display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;
+    }
+    .dot-sep { width: 3px; height: 3px; border-radius: 50%; background: var(--border2); }
+
+    /* SUBMITTED STATE */
+    .submitted-msg {
+      display: none; text-align: center; padding: 2rem 1rem;
+    }
+    .submitted-msg .si-icon { font-size: 36px; color: var(--text3); margin-bottom: 12px; }
+    .submitted-msg .si-title { font-family: 'Instrument Serif', serif; font-size: 1.5rem; margin-bottom: 8px; }
+    .submitted-msg .si-desc { font-size: 13px; color: var(--text2); }
+
+    /* SECTION SHARED */
+    section { padding: 2.5rem 1.5rem; border-bottom: 0.5px solid var(--border); }
+    .section-label {
+      font-size: 11px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--text3); margin-bottom: 1.75rem; text-align: center;
+    }
+
+    /* HOW IT WORKS */
+    .steps {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1px; border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+    }
+    .step { padding: 1.25rem 1rem; background: var(--bg2); }
+    .step-num {
+      font-family: 'Instrument Serif', serif; font-size: 26px; line-height: 1;
+      color: var(--border2); margin-bottom: 10px;
+    }
+    .step-icon { font-size: 18px; color: var(--text2); margin-bottom: 8px; display: block; }
+    .step-title { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+    .step-desc { font-size: 12px; color: var(--text3); line-height: 1.5; }
+
+    /* CLOCK */
+    .clock-section { text-align: center; }
+    .clock-label {
+      font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--text3); margin-bottom: 1rem; font-weight: 500;
+    }
+    .clock-row { display: flex; justify-content: center; align-items: flex-start; gap: 2px; }
+    .cu { display: flex; flex-direction: column; align-items: center; min-width: 60px; }
+    .cd {
+      font-family: 'Instrument Serif', serif; font-size: clamp(2.4rem, 8vw, 3.8rem);
+      line-height: 1; letter-spacing: -2px; color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+    .cl { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); margin-top: 5px; }
+    .csep {
+      font-family: 'Instrument Serif', serif; font-size: clamp(2rem, 7vw, 3.2rem);
+      color: var(--border2); line-height: 1; padding-top: 2px;
+      animation: blink 2s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:0.25} 50%{opacity:1} }
+    .clock-caption { margin-top: 1rem; font-size: 13px; color: var(--text2); }
+    .clock-random-note { margin-top: 6px; font-size: 11px; color: var(--text3); }
+
+    /* SWISH */
+    .swish-box {
+      background: var(--swish-bg); border: 0.5px solid var(--swish-border);
+      border-radius: var(--radius-lg); padding: 1.25rem 1.5rem;
+      display: flex; align-items: flex-start; gap: 14px; margin-top: 1.5rem;
+    }
+    .swish-logo {
+      width: 42px; height: 42px; border-radius: 10px; background: #fff;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      border: 0.5px solid var(--swish-border);
+    }
+    .swish-logo svg { width: 28px; height: 28px; }
+    .swish-content { flex: 1; }
+    .swish-title { font-size: 14px; font-weight: 500; color: var(--swish-text); margin-bottom: 4px; }
+    .swish-desc { font-size: 12px; color: var(--swish-text); line-height: 1.5; opacity: 0.85; }
+    .swish-number { font-size: 18px; font-weight: 500; color: var(--swish-text); margin-top: 8px; letter-spacing: 1px; }
+
+    /* PRICING */
+    .price-cards {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px; margin-top: 1.5rem;
+    }
+    .pc {
+      background: var(--bg); border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg); padding: 1.25rem;
+    }
+    .pc-featured { border: 2px solid var(--info-border); }
+    .pc-badge {
+      display: inline-block; font-size: 10px; font-weight: 500; letter-spacing: 0.8px;
+      text-transform: uppercase; padding: 3px 8px; border-radius: var(--radius);
+      margin-bottom: 10px; background: var(--info-bg); color: var(--info-text);
+    }
+    .pc-tag { font-size: 10px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; display: block; }
+    .pc-price { font-family: 'Instrument Serif', serif; font-size: 2.2rem; line-height: 1; margin-bottom: 4px; }
+    .pc-currency { font-size: 14px; color: var(--text3); }
+    .pc-desc { font-size: 12px; color: var(--text2); line-height: 1.5; margin-bottom: 14px; }
+    .pc-feature { display: flex; align-items: flex-start; gap: 6px; font-size: 12px; color: var(--text2); margin-bottom: 6px; }
+    .pc-feature i { font-size: 14px; color: var(--text3); margin-top: 1px; flex-shrink: 0; }
+    .pc-swish { margin-top: 14px; font-size: 11px; color: var(--swish-text); display: flex; align-items: center; gap: 4px; }
+
+    /* PROMISE */
+    .promise { text-align: center; }
+    .promise-q {
+      font-family: 'Instrument Serif', serif; font-style: italic;
+      font-size: clamp(1.1rem, 3vw, 1.5rem); line-height: 1.4;
+      max-width: 460px; margin: 0 auto 0.75rem;
+    }
+    .promise-a { font-size: 13px; color: var(--text3); max-width: 380px; margin: 0 auto; }
+
+    /* FOOTER */
+    footer {
+      padding: 1.5rem; display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap; gap: 10px;
+    }
+    .footer-left { display: flex; align-items: center; gap: 14px; }
+    .footer-logo { font-family: 'Instrument Serif', serif; font-size: 16px; }
+    .footer-sweden { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text3); }
+    .footer-copy { font-size: 11px; color: var(--text3); }
+
+    @media (max-width: 500px) {
+      .nav-right .made-sweden { display: none; }
+      h1 { font-size: 1.9rem; }
+      .price-cards { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <nav>
+    <a class="nav-logo" href="#">
+      <div class="nav-dot"></div>
+      Bengt AI
+    </a>
+    <div class="nav-right">
+      <div class="made-sweden">
+        <div class="flag">
+          <svg viewBox="0 0 22 15" xmlns="http://www.w3.org/2000/svg">
+            <rect width="22" height="15" fill="#006AA7"/>
+            <rect x="6" y="0" width="3" height="15" fill="#FECC02"/>
+            <rect x="0" y="6" width="22" height="3" fill="#FECC02"/>
+          </svg>
+        </div>
+        Made in Sweden
+      </div>
+      <a href="#submit" class="nav-cta">Submit a problem</a>
+    </div>
+  </nav>
+
+  <div class="early-access">
+    <div class="ea-left">
+      <i class="ti ti-sparkles ea-icon"></i>
+      <div class="ea-text">
+        <strong>Want to get access before everyone else?</strong>
+        Join a small group of early users shaping how Bengt works.
+      </div>
+    </div>
+    <a href="mailto:early@bengtai.se" class="ea-btn">
+      Contact us <i class="ti ti-arrow-right" style="font-size:11px;vertical-align:-1px;margin-left:2px"></i>
+    </a>
+  </div>
+
+  <section class="hero" id="submit">
+    <div class="eyebrow">
+      <span class="eyebrow-line"></span>
+      Deep reasoning, on demand
+      <span class="eyebrow-line"></span>
+    </div>
+    <h1>Bengt thinks it through.<br><em>You get the answer.</em></h1>
+    <p class="hero-sub">Describe your problem. Bengt reasons over it for up to 24 hours and returns a complete, structured solution — not a chatbot response. Pay per solution, not per token.</p>
+
+    <div class="submit-area" id="submit-area">
+      <div class="textarea-wrap">
+        <textarea id="problem-input" placeholder="Describe your problem in plain language. The harder the better — Bengt takes time to reason through edge cases, trade-offs, and alternatives before responding."></textarea>
+        <div class="ta-footer">
+          <span class="ta-meta">Up to 24 hours &middot; One flat fee</span>
+          <button class="submit-btn" onclick="handleSubmit()">
+            <i class="ti ti-send"></i>
+            Submit
+          </button>
+        </div>
+      </div>
+      <div class="pricing-hint">
+        <span>From 99 kr per solution</span>
+        <span class="dot-sep"></span>
+        <span>Pay with Swish</span>
+        <span class="dot-sep"></span>
+        <span>Full refund if unsatisfied</span>
+      </div>
+    </div>
+
+    <div class="submitted-msg" id="submitted">
+      <div class="si-icon"><i class="ti ti-clock-hour-4"></i></div>
+      <div class="si-title">Bengt is thinking</div>
+      <div class="si-desc">Your problem has been received. Expect a complete, reasoned solution within 24 hours — delivered to your inbox.</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-label">How it works</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <i class="ti ti-writing step-icon"></i>
+        <div class="step-title">Describe your problem</div>
+        <div class="step-desc">Strategy, architecture, decisions, analysis — any problem that deserves more than a quick answer.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <i class="ti ti-brain step-icon"></i>
+        <div class="step-title">Bengt reasons deeply</div>
+        <div class="step-desc">Up to 24 hours of deliberate reasoning — exploring angles, stress-testing assumptions, weighing trade-offs.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <i class="ti ti-file-text step-icon"></i>
+        <div class="step-title">Receive a full solution</div>
+        <div class="step-desc">A structured, complete response. Not a suggestion — a worked-through answer ready to act on.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <i class="ti ti-device-mobile step-icon"></i>
+        <div class="step-title">Pay with Swish</div>
+        <div class="step-desc">One flat price per solution. Swish the fee, no subscription, no surprise bills.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="clock-section">
+    <p class="clock-label">Current reasoning window</p>
+    <div class="clock-row">
+      <div class="cu"><span class="cd" id="ch">--</span><span class="cl">Hours</span></div>
+      <span class="csep">:</span>
+      <div class="cu"><span class="cd" id="cm">--</span><span class="cl">Min</span></div>
+      <span class="csep">:</span>
+      <div class="cu"><span class="cd" id="cs">--</span><span class="cl">Sec</span></div>
+    </div>
+    <p class="clock-caption">Submit now — Bengt delivers within this window.</p>
+    <p class="clock-random-note">Window refreshes randomly as capacity opens up.</p>
+  </section>
+
+  <section>
+    <p class="section-label">Pricing &amp; payment</p>
+
+    <div class="price-cards">
+      <div class="pc">
+        <span class="pc-tag">Standard</span>
+        <div class="pc-price">99 <span class="pc-currency">kr</span></div>
+        <div class="pc-desc">One well-reasoned solution to a clearly scoped problem.</div>
+        <div class="pc-feature"><i class="ti ti-check"></i>Up to 24h turnaround</div>
+        <div class="pc-feature"><i class="ti ti-check"></i>Structured written answer</div>
+        <div class="pc-feature"><i class="ti ti-check"></i>One follow-up question</div>
+        <div class="pc-swish"><i class="ti ti-device-mobile" style="font-size:13px"></i> Swish 99 kr</div>
+      </div>
+      <div class="pc pc-featured">
+        <span class="pc-badge">Most popular</span>
+        <span class="pc-tag">Deep</span>
+        <div class="pc-price">299 <span class="pc-currency">kr</span></div>
+        <div class="pc-desc">Complex problems requiring thorough analysis and alternatives.</div>
+        <div class="pc-feature"><i class="ti ti-check"></i>Up to 24h turnaround</div>
+        <div class="pc-feature"><i class="ti ti-check"></i>Multiple options with trade-offs</div>
+        <div class="pc-feature"><i class="ti ti-check"></i>Three follow-up questions</div>
+        <div class="pc-feature"><i class="ti ti-check"></i>Implementation outline</div>
+        <div class="pc-swish"><i class="ti ti-device-mobile" style="font-size:13px"></i> Swish 299 kr</div>
+      </div>
+      <div class="pc">
+        <span class="pc-tag">Strategic</span>
+        <div class="pc-price">799 <span class="pc-currency">kr</span></div>
+        <div class="pc-desc">High-stakes decisions with full scenario analysis and a recommendation you can defend.</div>
+        <div class="pc-feature"><i class="ti ti-check"></i>Priority queue</div>
+        <div class="pc-feature"><i class="ti ti-check"></i>Scenario + risk analysis</div>
+        <div class="pc-feature"><i class="ti ti-check"></i>Unlimited follow-ups (7 days)</div>
+        <div class="pc-feature"><i class="ti ti-check"></i>Presentation-ready format</div>
+        <div class="pc-swish"><i class="ti ti-device-mobile" style="font-size:13px"></i> Swish 799 kr</div>
+      </div>
+    </div>
+
+    <div class="swish-box">
+      <div class="swish-logo">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#7CC242"/>
+              <stop offset="100%" style="stop-color:#0097DB"/>
+            </linearGradient>
+          </defs>
+          <path d="M20 75 Q10 50 30 30 Q50 10 70 25 Q85 35 80 55 Q75 70 60 72 Q45 74 40 62 Q35 50 45 42 Q55 34 65 40 Q72 46 68 56 Q64 64 55 63" stroke="url(#sg)" stroke-width="9" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="swish-content">
+        <div class="swish-title">Pay with Swish</div>
+        <div class="swish-desc">Submit your problem, then Swish the fee to confirm. Include your email in the Swish message so Bengt knows where to send the solution.</div>
+        <div class="swish-number">123 456 78 90</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="promise">
+    <p class="promise-q">"What if I can think fast and still think well?"</p>
+    <p class="promise-a">Most AI rushes to respond. Bengt takes the time a problem deserves — then delivers something you can actually use.</p>
+  </section>
+
+  <footer>
+    <div class="footer-left">
+      <span class="footer-logo">Bengt AI</span>
+      <div class="footer-sweden">
+        <div class="flag">
+          <svg viewBox="0 0 22 15" xmlns="http://www.w3.org/2000/svg">
+            <rect width="22" height="15" fill="#006AA7"/>
+            <rect x="6" y="0" width="3" height="15" fill="#FECC02"/>
+            <rect x="0" y="6" width="22" height="3" fill="#FECC02"/>
+          </svg>
+        </div>
+        Made in Sweden
+      </div>
+    </div>
+    <span class="footer-copy">© 2026 &middot; Pay with Swish &middot; Full refund if unsatisfied</span>
+  </footer>
+
+</div>
+
+<script>
+  function pad(n) { return String(Math.floor(n)).padStart(2, '0'); }
+
+  var clockEnd = null;
+
+  function newRandomWindow() {
+    var minMin = 3 * 60;
+    var maxMin = 23 * 60 + 50;
+    var randMin = Math.floor(Math.random() * (maxMin - minMin + 1)) + minMin;
+    clockEnd = Date.now() + randMin * 60 * 1000;
+  }
+
+  newRandomWindow();
+
+  function tickClock() {
+    var rem = Math.max(0, Math.floor((clockEnd - Date.now()) / 1000));
+    if (rem === 0) { newRandomWindow(); return; }
+    var h = Math.floor(rem / 3600); rem %= 3600;
+    var m = Math.floor(rem / 60);
+    var s = rem % 60;
+    document.getElementById('ch').textContent = pad(h);
+    document.getElementById('cm').textContent = pad(m);
+    document.getElementById('cs').textContent = pad(s);
+  }
+
+  tickClock();
+  setInterval(tickClock, 1000);
+
+  function handleSubmit() {
+    var val = document.getElementById('problem-input').value.trim();
+    if (!val) { document.getElementById('problem-input').focus(); return; }
+    document.getElementById('submit-area').style.display = 'none';
+    document.getElementById('submitted').style.display = 'block';
+  }
+</script>
+</body>
+</html>
